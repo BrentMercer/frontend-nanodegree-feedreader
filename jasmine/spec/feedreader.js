@@ -26,47 +26,84 @@ $(function() {
             expect(allFeeds.length).not.toBe(0);
         });
 
+        // Tests whether feed item contains URL.
+        it('URLs are defined', function() {
+            allFeeds.forEach(function(feed) {
+                expect(feed.url).toBeDefined();
+                expect(feed.url.length).not.toBe(0);
+            })
+        });
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a URL defined
-         * and that the URL is not empty.
-         */
-
-
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a name defined
-         * and that the name is not empty.
-         */
+        // Tests whether feed item contains name.
+        it('Names are defined', function() {
+            allFeeds.forEach(function(feed) {
+                expect(feed.name).toBeDefined();
+                expect(feed.name.length).not.toBe(0);
+            })
+        });
     });
 
 
-    /* TODO: Write a new test suite named "The menu" */
+    // Suite tests whether the sliding menu works properly on page load and when clicked.
+    describe('The menu', function() {
+        
+        // Setup body and menu icon variables
+        let body = document.body;
+        let menuBurger = document.querySelector(".menu-icon-link");
 
-        /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
-         */
+        // Tests whether the menu is hidden on page load.
+        it('Menu hidden by default', function() {
+            expect(body.className).toContain("menu-hidden");
+        });
+        
+        // Tests whether menu toggles hide/show when burger icon is clicked
+        it('Menu toggles on clicky-click', function() {
+            menuBurger.click();
+            expect(body.className).not.toContain("menu-hidden");
+            menuBurger.click();
+            expect(body.className).toContain("menu-hidden");
+        });
+    });
 
-         /* TODO: Write a test that ensures the menu changes
-          * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
-          * clicked and does it hide when clicked again.
-          */
 
-    /* TODO: Write a new test suite named "Initial Entries" */
+    // Suite tests whether loadFeed is loading content.
+    describe('Initial Entries', function() {
 
-        /* TODO: Write a test that ensures when the loadFeed
-         * function is called and completes its work, there is at least
-         * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
-         * the use of Jasmine's beforeEach and asynchronous done() function.
-         */
+        beforeEach(function(done) {
+            loadFeed(0, function() {
+                done();
+            });
+        });
 
-    /* TODO: Write a new test suite named "New Feed Selection" */
+        // Checks if feed contains at least 1 feed after loadFeed runs
+        it("Contains at least 1 feed", function(done) {
+            let numEntries = document.querySelector(".feed").getElementsByClassName("entry").length;
+            expect(numEntries).toBeGreaterThan(0);
+            done();
+        });
+    });
 
-        /* TODO: Write a test that ensures when a new feed is loaded
-         * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
-         */
-}());
+    // Suite tests if content on initial load matches content after loadFeed.
+    describe('New Feed Selection', function() {
+        
+        // Check content on initial load.
+        let feedOnLoad;
+        beforeEach(function(done) {
+            loadFeed(0, function() {
+                feedOnLoad = document.querySelector(".feed").innerHTML;
+                loadFeed(1, function() {
+                    done();
+                });
+            });
+        });
+
+        // Tests whether content loaded by loadFeed is actually new, compated to the original content.
+        it("Content changes on load", function(done) {
+            let feedAfterLoader = document.querySelector(".feed").innerHTML;
+            expect(feedOnLoad).not.toBe(feedAfterLoader);
+            done();
+        });
+
+    });
+    /* TODO: Clean up ugly ES5 anonymous functions" */
+});
